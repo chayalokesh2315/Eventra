@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | Event Management</title>
+  <style>
+    body, html {
+      margin: 0;
+      height: 100%;
+      font-family: 'Poppins', sans-serif;
+      background: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .auth-card {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 10px;
+      width: 350px;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+
+    .auth-card input {
+      width: 100%;
+      margin: 10px 0;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 12px;
+      margin-top: 15px;
+      border: none;
+      background: #0078ff;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .btn.ghost {
+      background: transparent;
+      border: 1px solid #0078ff;
+      color: #0078ff;
+    }
+
+    #loginMsg {
+      margin-top: 10px;
+      font-size: 14px;
+      color: red;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="auth-card">
+    <h2>Welcome Back</h2>
+    <p>Login to manage your bookings</p>
+
+    <input id="email" type="email" placeholder="Email" />
+    <input id="password" type="password" placeholder="Password" />
+
+    <button id="doLogin" class="btn">Sign In</button>
+    <button class="btn ghost" onclick="location.href='index.html'">Back</button>
+
+    <p id="loginMsg"></p>
+  </div>
+
+  <script>
+  (async () => {
+
+    // ALWAYS use local backend while developing
+    const BASE_URL = "http://localhost:5000/api/auth";
+
+    function showMessage(el, msg, color = "red") {
+      el.style.color = color;
+      el.textContent = msg;
+    }
+
+    const doLoginBtn = document.getElementById("doLogin");
+    if (doLoginBtn) {
+      doLoginBtn.addEventListener("click", async (e) => {
+        e.preventDefault();
+
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value.trim();
+        const msg = document.getElementById("loginMsg");
+
+        if (!email || !password) {
+          showMessage(msg, "Enter email and password");
+          return;
+        }
+
+        try {
+          const res = await fetch(`${BASE_URL}/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password }),
+          });
+
+          const data = await res.json();
+          console.log("Login response:", data);
+
+          if (res.ok && data.token) {
+            showMessage(msg, "Login successful! Redirecting...", "green");
+
+            localStorage.setItem("es_token", data.token);
+            localStorage.setItem("user_role", data.user.role);
+
+            setTimeout(() => {
+              window.location.href =
+                data.user.role === "admin"
+                ? "admin-dashboard.html"
+                : "customer-dashboard.html";
+            }, 1000);
+
+          } else {
+            showMessage(msg, data.msg || "Invalid email or password");
+          }
+
+        } catch (err) {
+          console.error("Login error:", err);
+          showMessage(msg, "Server error. Try again later.");
+        }
+      });
+    }
+  })();
+</script>
+
+
+</body>
+</html>

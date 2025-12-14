@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard | Event Management</title>
+
+<style>
+body {
+  font-family: Poppins, sans-serif;
+  background: #111;
+  color: #fff;
+  margin: 0;
+}
+.dashboard {
+  width: 90%;
+  margin: 40px auto;
+}
+h1 {
+  text-align: center;
+  color: #ffd54f;
+}
+.add-event-form {
+  background: rgba(255,255,255,0.1);
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 30px;
+}
+.add-event-form input,
+.add-event-form textarea,
+.add-event-form select,
+.add-event-form button {
+  width: 100%;
+  padding: 10px;
+  margin: 6px 0;
+  border-radius: 6px;
+  border: none;
+}
+button {
+  background: #ff9800;
+  color: #fff;
+  cursor: pointer;
+}
+button:hover {
+  background: #e68900;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+th, td {
+  padding: 12px;
+}
+th {
+  background: #ff9800;
+}
+tr:nth-child(even) {
+  background: rgba(255,255,255,0.05);
+}
+.btn {
+  padding: 6px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.btn-edit {
+  background: #4caf50;
+}
+.btn-delete {
+  background: #f44336;
+}
+</style>
+</head>
+
+<body>
+<div class="dashboard">
+  <h1>Admin Dashboard</h1>
+
+  <!-- ADD EVENT -->
+  <div class="add-event-form">
+    <h3>Add Event</h3>
+    <input id="eventName" placeholder="Event Name">
+    <input id="eventImage" placeholder="Image URL">
+    <input id="eventDate" type="date">
+    <input id="eventLocation" placeholder="Location">
+    <input id="eventCapacity" type="number" placeholder="Capacity">
+    <input id="eventPrice" type="number" placeholder="Price">
+    <select id="eventCategory">
+      <option value="">Select Category</option>
+      <option value="Wedding">Wedding</option>
+      <option value="Birthday">Birthday</option>
+      <option value="Corporate">Corporate</option>
+      <option value="Seminar">Seminar</option>
+    </select>
+    <textarea id="eventDescription" placeholder="Description"></textarea>
+    <button onclick="addEvent()">Create Event</button>
+  </div>
+
+  <!-- EVENTS TABLE -->
+  <table>
+    <thead>
+      <tr>
+        <th>Event</th>
+        <th>Image</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="eventsTable"></tbody>
+  </table>
+</div>
+
+<script>
+let events = JSON.parse(localStorage.getItem("events")) || [];
+const table = document.getElementById("eventsTable");
+
+function saveEvents() {
+  localStorage.setItem("events", JSON.stringify(events));
+}
+
+function renderEvents() {
+  table.innerHTML = "";
+  events.forEach((e, i) => {
+    const row = table.insertRow();
+    row.innerHTML = `
+      <td><strong>${e.name}</strong><br><small>${e.category}</small></td>
+      <td><img src="${e.image}" width="120"></td>
+      <td>
+        <button class="btn btn-edit" onclick="editEvent(${i})">Edit</button>
+        <button class="btn btn-delete" onclick="deleteEvent(${i})">Delete</button>
+      </td>
+    `;
+  });
+}
+
+function addEvent() {
+  const event = {
+    name: eventName.value,
+    image: eventImage.value,
+    date: eventDate.value,
+    location: eventLocation.value,
+    capacity: eventCapacity.value,
+    price: eventPrice.value,
+    category: eventCategory.value,
+    description: eventDescription.value
+  };
+
+  if (!event.name || !event.image) {
+    alert("Please fill required fields");
+    return;
+  }
+
+  events.push(event);
+  saveEvents();
+  renderEvents();
+  clearForm();
+  alert("Event added successfully!");
+}
+
+function editEvent(index) {
+  const e = events[index];
+  const newName = prompt("Edit Event Name", e.name);
+  if (!newName) return;
+  e.name = newName;
+  saveEvents();
+  renderEvents();
+}
+
+function deleteEvent(index) {
+  if (!confirm("Delete this event?")) return;
+  events.splice(index, 1);
+  saveEvents();
+  renderEvents();
+}
+
+function clearForm() {
+  document.querySelectorAll(".add-event-form input, textarea, select")
+    .forEach(el => el.value = "");
+}
+
+renderEvents();
+</script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customer Login | Event Management</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="slideshow"></div>
+
+  <header>
+    <div class="site-title">Event Management</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="admin-login.html">Admin Login</a>
+    </nav>
+  </header>
+
+  <section class="login-container">
+    <h2>Customer Login</h2>
+    <form id="loginForm" class="login-form">
+      <input id="loginEmail" type="email" placeholder="Email" required>
+      <input id="loginPassword" type="password" placeholder="Password" required>
+      <button type="submit" class="btn">Login</button>
+      <p><a href="#">Forgot Password?</a></p>
+      <p>Don’t have an account? <a href="signup.html">Sign Up</a></p>
+    </form>
+    <p id="loginMsg"></p>
+  </section>
+
+  <script src="js/auth.js"></script>
+
+  <!-- Redirect to customer-dashboard after login -->
+  
+</body>
+</html>
